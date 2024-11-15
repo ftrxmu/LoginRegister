@@ -20,6 +20,13 @@
             <label>Password:</label>
             <input type="password" name="password" required>
         </div>
+        <div class="mb-3">
+            <label for="role" class="form-label">Role</label>
+            <select class="form-select" id="role" name="role" required>
+                <option value="pengguna">Pengguna</option>
+                <option value="petugas">Petugas</option>
+            </select>
+        </div>
         <button type="submit">Register</button>
     </form>
 
