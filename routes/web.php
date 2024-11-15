@@ -2,21 +2,21 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BukuController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
+Route::get('/register', [AuthController::class, 'viewregister'])->name('register');
+Route::post('/register', [AuthController::class, 'register']);
+Route::get('/login', [AuthController::class, 'viewlogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::get('/register',[AuthController::class,'viewregister'])->name('register');
-Route::post('/register',[AuthController::class,'register']);
-Route::get('/login',[AuthController::class,'viewlogin'])->name('login');
-Route::post('/login',[AuthController::class,'login']);
-Route::post('/logout',[AuthController::class,'logout'])->name('logout');
-Route::get('/home', function () { return view('home');})->middleware('auth');
+Route::middleware(['auth', 'role:petugas'])->group(function () {
+    Route::get('/buku', [BukuController::class, 'index'])->name('buku.index');
+    Route::post('/buku', [BukuController::class, 'store'])->name('buku.store');
+    Route::put('/buku/{id}', [BukuController::class, 'update'])->name('buku.update');
+    Route::delete('/buku/{id}', [BukuController::class, 'destroy'])->name('buku.destroy');
+});
+
+Route::middleware(['auth', 'role:pengguna'])->group(function () {
+    Route::get('/home', [BukuController::class, 'showBukuList'])->name('home');
+});

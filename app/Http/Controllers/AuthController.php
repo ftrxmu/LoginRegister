@@ -18,11 +18,13 @@ class AuthController extends Controller
             'name' => ['required'],
             'email' => ['required', 'unique:user,email'],
             'password' => ['required'],
+            'role' => ['required', 'in:petugas,pengguna'],
         ]);
         User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password),
+            'role' => $request->role,
         ]);
         return redirect()->route('login')->with('success','Registrasi berhasil silahkan login');
     }
@@ -34,13 +36,14 @@ class AuthController extends Controller
             'email' => ['required', 'unique:user,email'],
             'password' => ['required'],
         ]);
-        if (Auth::attempt($request->only('email','password'))) {
-            $request->session()->regenerate(); 
-            return redirect()->intended('/home');
+        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+            if (Auth::user()->role == 'petugas') {
+                return redirect()->route('buku.index');
+            } elseif (Auth::user()->role == 'pengguna') {
+                return redirect()->route('home');
+            }
+        return redirect()->route('login')->withErrors('Email atau password salah.');
         }
-        throw ValidationException::withMessages([
-            'email' => ['Email atau password salah.'],
-        ]);
     }
     public function logout(Request $request)
     {
